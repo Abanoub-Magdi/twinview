@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TwinView — Share screen & take control</title>
+    <meta
+      name="description"
+      content="Two people open one link. Share your screen and hand over mouse and keyboard control."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="bg" aria-hidden="true"></div>
+
+    <header class="top">
+      <a class="brand" href="./" aria-label="TwinView home">
+        <span class="brand-mark"></span>
+        TwinView
+      </a>
+      <p class="top-note">Works best in Chrome or Edge · HTTPS required for screen share</p>
+    </header>
+
+    <main>
+      <!-- Landing -->
+      <section id="landing" class="panel landing">
+        <p class="eyebrow">Remote screen · two people</p>
+        <h1>TwinView</h1>
+        <p class="lede">
+          Open the same room. One shares the desktop. The other watches — and can take
+          mouse &amp; keyboard control.
+        </p>
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" id="btn-host">Share my screen</button>
+          <button type="button" class="btn btn-ghost" id="btn-join">Join a room</button>
+        </div>
+      </section>
+
+      <!-- Host setup -->
+      <section id="host-setup" class="panel hidden">
+        <h2>Share your screen</h2>
+        <p class="lede short">
+          You’ll get a room code. Send it to the other person. For full mouse/keyboard
+          control on Windows, also run the local control agent once.
+        </p>
+        <div class="field-row">
+          <label for="host-name">Your name</label>
+          <input id="host-name" type="text" maxlength="24" placeholder="e.g. Alex" autocomplete="nickname" />
+        </div>
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" id="btn-start-host">Create room &amp; share</button>
+          <button type="button" class="btn btn-ghost" id="btn-back-host">Back</button>
+        </div>
+        <details class="agent-help">
+          <summary>Enable remote control (Windows agent)</summary>
+          <p>
+            Screen viewing works in the browser alone. To let the visitor move your mouse
+            and type, run this in PowerShell from the <code>host-agent</code> folder:
+          </p>
+          <pre>powershell -ExecutionPolicy Bypass -File .\Start-ControlAgent.ps1</pre>
+          <p>Leave that window open while you host. Status shows below after you start sharing.</p>
+        </details>
+      </section>
+
+      <!-- Join setup -->
+      <section id="join-setup" class="panel hidden">
+        <h2>Join a room</h2>
+        <p class="lede short">Enter the code from the person sharing their screen.</p>
+        <div class="field-row">
+          <label for="join-name">Your name</label>
+          <input id="join-name" type="text" maxlength="24" placeholder="e.g. Sam" autocomplete="nickname" />
+        </div>
+        <div class="field-row">
+          <label for="room-code">Room code</label>
+          <input
+            id="room-code"
+            type="text"
+            maxlength="6"
+            placeholder="ABC123"
+            autocomplete="off"
+            spellcheck="false"
+            class="code-input"
+          />
+        </div>
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" id="btn-start-join">Connect</button>
+          <button type="button" class="btn btn-ghost" id="btn-back-join">Back</button>
+        </div>
+      </section>
+
+      <!-- Session -->
+      <section id="session" class="session hidden">
+        <div class="session-bar">
+          <div class="session-meta">
+            <span class="pill" id="role-pill">—</span>
+            <span class="room-display">Room <strong id="room-display">————</strong></span>
+            <button type="button" class="btn-text" id="btn-copy-code" title="Copy room code">Copy</button>
+          </div>
+          <div class="session-actions">
+            <span class="status" id="conn-status">Connecting…</span>
+            <span class="status subtle" id="agent-status"></span>
+            <button type="button" class="btn btn-small hidden" id="btn-toggle-control">Request control</button>
+            <button type="button" class="btn btn-small btn-danger" id="btn-leave">Leave</button>
+          </div>
+        </div>
+
+        <div class="stage">
+          <video id="remote-video" autoplay playsinline></video>
+          <div id="host-preview-wrap" class="host-preview hidden">
+            <video id="local-video" autoplay playsinline muted></video>
+            <p>You are sharing · waiting for the other person</p>
+          </div>
+          <div id="waiting" class="waiting">
+            <p id="waiting-text">Starting…</p>
+          </div>
+        </div>
+
+        <p class="hint" id="session-hint"></p>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+  </body>
+</html>
